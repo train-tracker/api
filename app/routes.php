@@ -3,20 +3,26 @@
 App::post('/login', function() use($app) {
   $vars = json_decode($app->request->getBody());
 
-  $filter = ['email'=>$vars->email, 'pass'=>password_hash($vars->password, PASSWORD_BCRYPT)];
+  $filter = ['email'=>$vars->email, 'password'=>sha1($vars->password)];
 
   $reply = DB::table('user')->filter($filter)->run()->toNative();
 
-  App::render(200,array(
-    'msg' => 'Logged In',
-    'data' => $vars
-  ));
+  if (!empty($reply)){
+    App::render(200,array(
+      'msg' => 'Logged In'
+    ));
+  }else{
+    App::render(403,array(
+      'msg' => 'Not Logged In'
+    ));
+  }
+
 });
 
 App::get('/data', function() use ($app) {
   $data = DB::table('data')->run()->toNative();
 
-  $app->render(HTTPError::get('OK'),array(
+  $app->render(200,array(
     'msg' => 'Some Data!',
     'data' => $data,
     'error' => false
