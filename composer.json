@@ -1,5 +1,20 @@
 {
-    "name": "train-tracker/api",
-    "authors": [],
-    "require": {}
+  "require": {
+    "php": ">=5.5.0",
+    "danielmewes/php-rql": "1.15",
+    "mailgun/mailgun-php": "~1.7.2",
+    "itsgoingd/slim-facades": "1",
+    "slim/slim": "2.*",
+    "slim/extras": "*",
+    "slim/views": "0.1.*",
+    "entomb/slim-json-api": "dev-master"
+  },
+  "autoload": {
+    "classmap": [
+      "app/controllers",
+      "app/facades",
+      "app/helpers",
+      "app/middleware"
+    ]
+  }
 }

@@ -77,3 +77,6 @@ $RECYCLE.BIN/
 ### Tower ###
 # Tower.app - http://www.git-tower.com/
 Icon.png
+
+/vendor/
+.env.php
