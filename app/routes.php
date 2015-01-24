@@ -12,6 +12,7 @@ App::post('/login', function() use($app) {
     $_SESSION['last_name'] = $reply[0]['last_name'];
     $_SESSION['username'] = $reply[0]['username'];
     $_SESSION['email'] = $reply[0]['email'];
+    if (isset($reply[0]['isAdmin'])) $_SESSION['isAdmin'] = $reply[0]['isAdmin'];
 
     App::render(200,array(
       'msg' => 'Logged In'
@@ -23,11 +24,17 @@ App::post('/login', function() use($app) {
   }
 });
 
+App::get('/logout', function() use($app) {
+  unset($_SESSION['id']);
+  App::render(200,array(
+    'msg' => 'Logged Out'
+  ));
+});
+
 // route middleware for simple API authentication
 App::get('/session', function() use ($app) {
-  if ($_SESSION['id']){
+  if (isset($_SESSION['id'])){
     $userInfo = $_SESSION;
-    unset($userInfo['password']);
     $app->render(200,array(
       'msg' => 'Authenticated',
       'data' => $userInfo,
