@@ -128,7 +128,7 @@ App::get('/modules/:moduleID/questions', 'authenticate', function($moduleID) use
 
 App::post('/modules/:moduleID/questions', 'authenticate', function($moduleID) use ($app) {
   $vars = json_decode($app->request->getBody());
-  $vars->$moduleID = $moduleID;
+  $vars->moduleID = $moduleID;
   $result = DB::table('moduleQuestion')->insert($vars)->run()->toNative();
   $vars->id = $result['generated_keys'][0];
   $app->render(200,array(
