@@ -13,13 +13,14 @@
   $app->add(new \JsonApiMiddleware());
 
 
-  $app->add(new \Slim\Middleware\SessionCookie(array()));
+  //$app->add(new \Slim\Middleware\SessionCookie(array('domain' => 'dockerhost')));
 
   function authenticate(\Slim\Route $route) {
     $app = \Slim\Slim::getInstance();
-    if (empty($_SESSION)) {
-      $app->render(401,array(
-        'msg' => 'Not Logged In'
+    if (!isset($_SESSION['id'])) {
+      $app->render(403,array(
+        'msg' => 'Not Logged In',
+        'data' => $_SESSION
       ));
     }
     return true;
