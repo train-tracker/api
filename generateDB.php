@@ -10,6 +10,13 @@ $config = require __DIR__.'/app/configuration.php';
 $conn = r\connect($config['RETHINK_HOST']);
 $conn->useDb($config['RETHINK_DATABASE']);
 
+if(!isset($argv[1])){
+    doDB($conn);
+    doUsers($conn);
+    doModules($conn);
+    die();
+}
+
 switch($argv[1]){
   case ('db'):
     doDB($conn);
