@@ -16,7 +16,7 @@ App::post('/login', function() use($app) {
 
     App::render(200,array(
       'msg' => 'Logged In',
-      'data' => $_SERVER['HTTP_ORIGIN'];
+      'data' => $_SERVER['HTTP_ORIGIN']
     ));
   } else {
     App::render(403,array(
