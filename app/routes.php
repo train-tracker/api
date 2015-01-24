@@ -23,8 +23,26 @@ App::post('/login', function() use($app) {
   }
 });
 
-App::get('/test', 'authenticate', function() use($app) {
+// route middleware for simple API authentication
+App::get('/session', function() use ($app) {
+  if ($_SESSION['id']){
+    $userInfo = $_SESSION;
+    unset($userInfo['password']);
+    $app->render(200,array(
+      'msg' => 'Authenticated',
+      'data' => $userInfo,
+      'error' => false
+    ));
+  }else{
+    $app->render(403,array(
+      'msg' => 'Not Authenticated',
+      'error' => true
+    ));
+  }
+});
 
+
+App::get('/test', 'authenticate', function() use($app) {
   App::render(200,array(
     'msg' => 'Logged In'
   ));
