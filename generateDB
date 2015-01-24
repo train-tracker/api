@@ -15,9 +15,9 @@ $conn->useDb($config['RETHINK_DATABASE']);
 $database = r\db($config['RETHINK_DATABASE']);
 
 if(!isset($argv[1])){
-    doDB($conn);
-    doUsers($conn);
-    doModules($conn);
+    doDB($conn, $config, $database);
+    doUsers($conn, $config, $database);
+    doModules($conn, $config, $database);
     die();
 }
 
@@ -26,29 +26,29 @@ switch($argv[1]){
   case '--help':
     echo "Help may go here someday when we have time :)\n";
   case ('db'):
-    doDB($conn);
+    doDB($conn, $config, $database);
   case ('users'):
-    doUsers($conn);
+    doUsers($conn, $config, $database);
     break;
   case ('modules'):
-    doModules($conn);
+    doModules($conn, $config, $database);
     break;
   case ('all'):
-    doDB($conn);
-    doUsers($conn);
-    doModules($conn);
+    doDB($conn, $config, $database);
+    doUsers($conn, $config, $database);
+    doModules($conn, $config, $database);
     break;
 
 }
 
-function doDB($conn){
+function doDB($conn, $config, $database){
   try{
     r\dbCreate($config['RETHINK_DATABASE'])->run($conn);
-    echo "Created db '$config['RETHINK_DATABASE']'\n";
+    echo "Created db '{$config['RETHINK_DATABASE']}'\n";
   }catch(Exception $e){}
 }
 
-function doUsers($conn){
+function doUsers($conn, $config, $database){
   // Create a test table
 
   try{
@@ -71,7 +71,7 @@ function doUsers($conn){
   echo "Created user => username: testuser2, password: password\n";
 }
 
-function doModules($conn){
+function doModules($conn, $config, $database){
   try{
     $database->tableDrop("module")->run($conn);
     echo "Dropped table module\n";
