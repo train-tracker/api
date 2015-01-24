@@ -86,11 +86,11 @@ App::get('/modules', 'authenticate', function() use ($app) {
 
 App::post('/modules', 'authenticate', function() use ($app) {
   $vars = json_decode($app->request->getBody());
-  $added = DB::table('module')->insert($vars)->run()->toNative();
-  $vars->id = $added['generated_keys'][0];
+  $result = DB::table('module')->insert($vars)->run()->toNative();
+  $vars->id = $result['generated_keys'][0];
   $app->render(200,array(
     'msg' => "Module Added",
-    'data' => $vars
+    'data' => $result
   ));
 });
 
@@ -100,7 +100,7 @@ App::put('/modules/:moduleID', 'authenticate', function($moduleID) use ($app) {
   $result = DB::table('module')->filter($filter)->update($vars)->run()->toNative();
   $app->render(200,array(
     'msg' => "Module Updated",
-    'data' => $vars
+    'data' => $result
   ));
 });
 
@@ -126,11 +126,11 @@ App::get('/modules/:moduleID/questions', 'authenticate', function($moduleID) use
 App::post('/modules/:moduleID/questions', 'authenticate', function($moduleID) use ($app) {
   $vars = json_decode($app->request->getBody());
   $filter = array('moduleID' => $moduleID);
-  $added = DB::table('moduleQuestion')->insert($vars)->run()->toNative();
-  $vars->id = $added['generated_keys'][0];
+  $result = DB::table('moduleQuestion')->insert($vars)->run()->toNative();
+  $vars->id = $result['generated_keys'][0];
   $app->render(200,array(
     'msg' => "Module Added",
-    'data' => $vars
+    'data' => $result
   ));
 });
 
@@ -140,12 +140,11 @@ App::put('/modules/:moduleID/questions/:questionID', 'authenticate', function($m
   $result = DB::table('moduleQuestion')->filter($filter)->update($vars)->run()->toNative();
   $app->render(200,array(
     'msg' => "Module Added",
-    'data' => $vars
+    'data' => $result
   ));
 });
 
 App::delete('/modules/:moduleID/questions/:questionID', 'authenticate', function($moduleID, $questionID) use ($app) {
-  $vars = json_decode($app->request->getBody());
   $filter = array('id' => $questionID);
   $result = DB::table('moduleQuestion')->filter($filter)->delete()->run()->toNative();
   $app->render(200,array(
@@ -168,11 +167,11 @@ App::get('/modules/:moduleID/questions/:questionsID/answers', 'authenticate', fu
 App::post('/modules/:moduleID/questions/:questionsID/answers', 'authenticate', function($moduleID, $questionID) use ($app) {
   $vars = json_decode($app->request->getBody());
   $vars->moduleID = $moduleID;
-  $added = DB::table('moduleQuestionAnswer')->insert($vars)->run()->toNative();
-  $vars->id = $added['generated_keys'][0];
+  $result = DB::table('moduleQuestionAnswer')->insert($vars)->run()->toNative();
+  $vars->id = $result['generated_keys'][0];
   $app->render(200,array(
     'msg' => "Module Added",
-    'data' => $vars
+    'data' => $result
   ));
 });
 
@@ -182,11 +181,11 @@ App::put('/modules/:moduleID/questions/:questionID/answers/:answerID', 'authenti
   $result = DB::table('moduleQuestionAnswer')->filter($filter)->update($vars)->run()->toNative();
   $app->render(200,array(
     'msg' => "Module Added",
-    'data' => $vars
+    'data' => $result
   ));
 });
 
-App::delete('/modules/:moduleID/questions/:questionID/answers/:answerID', 'authenticate', function($moduleID, $questionID) use ($app) {
+App::delete('/modules/:moduleID/questions/:questionID/answers/:answerID', 'authenticate', function($moduleID, $questionID, $answerID) use ($app) {
   $vars = json_decode($app->request->getBody());
   $filter = array('id' => $answerID);
   $result = DB::table('moduleQuestionAnswer')->filter($filter)->delete()->run()->toNative();
