@@ -12,6 +12,16 @@
   $app->view(new \JsonApiView());
   $app->add(new \JsonApiMiddleware());
 
+  function authenticate(\Slim\Route $route) {
+    $app = \Slim\Slim::getInstance();
+    if (empty($_SESSION)) {
+      $app->render(401,array(
+        'msg' => 'Not Logged In'
+      ));
+    }
+    return true;
+  }
+
   $app->add(new \Middleware\OptionsHeaders());
 
   $app->container->singleton('Database', function() use ($app){

@@ -7,6 +7,12 @@ App::post('/login', function() use($app) {
   $reply = DB::table('user')->filter($filter)->run()->toNative();
 
   if (!empty($reply)){
+    $_SESSION['id'] = $reply[0]['id'];
+    $_SESSION['first_name'] = $reply[0]['first_name'];
+    $_SESSION['last_name'] = $reply[0]['last_name'];
+    $_SESSION['username'] = $reply[0]['username'];
+    $_SESSION['email'] = $reply[0]['email'];
+
     App::render(200,array(
       'msg' => 'Logged In'
     ));
@@ -15,8 +21,16 @@ App::post('/login', function() use($app) {
       'msg' => 'Not Logged In'
     ));
   }
-
 });
+
+App::get('/test', 'authenticate', function() use($app) {
+
+  App::render(200,array(
+    'msg' => 'Logged In'
+  ));
+});
+
+
 
 App::post('/register', function() {
 
