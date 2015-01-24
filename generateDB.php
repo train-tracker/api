@@ -51,7 +51,7 @@ function doUsers($conn){
 
   $spass = sha1('1234');
 
-  $user1 = array('username' => "testuser", "first_name"=>"test", "last_name"=>"user", "password" => $spass, "email"=> "test@user.com", "admin" => 1);
+  $user1 = array('username' => "testuser", "first_name"=>"test", "last_name"=>"user", "password" => $spass, "email"=> "test@user.com", "isadmin" => 1);
   $user2 = array('username' => "testuser2", "first_name"=>"test", "last_name"=>"user2", "password" => $spass, "email"=> "test@user2.com");
 
   r\db("traintracker")->table('user')->insert($user1)->run($conn)->toNative();
