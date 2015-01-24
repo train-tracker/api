@@ -12,6 +12,8 @@ $config = require __DIR__.'/app/configuration.php';
 $conn = r\connect($config['RETHINK_HOST']);
 $conn->useDb($config['RETHINK_DATABASE']);
 
+$database = r\db($config['RETHINK_DATABASE']);
+
 if(!isset($argv[1])){
     doDB($conn);
     doUsers($conn);
@@ -41,8 +43,8 @@ switch($argv[1]){
 
 function doDB($conn){
   try{
-    r\dbCreate("traintracker")->run($conn);
-    echo "Created db 'traintracker\n";
+    r\dbCreate($config['RETHINK_DATABASE'])->run($conn);
+    echo "Created db '$config['RETHINK_DATABASE']'\n";
   }catch(Exception $e){}
 }
 
@@ -50,11 +52,11 @@ function doUsers($conn){
   // Create a test table
 
   try{
-    r\db("traintracker")->tableDrop("user")->run($conn);
+    $database->tableDrop("user")->run($conn);
     echo "Dropped table user\n";
   }catch(Exception $e){}
 
-  r\db("traintracker")->tableCreate("user")->run($conn);
+  $database->tableCreate("user")->run($conn);
   echo "Created table user\n";
 
   $spass = sha1('1234');
@@ -62,8 +64,8 @@ function doUsers($conn){
   $user1 = array('username' => "testuser", "first_name"=>"test", "last_name"=>"user", "password" => $spass, "email"=> "test@user.com", "isAdmin" => 1);
   $user2 = array('username' => "testuser2", "first_name"=>"test", "last_name"=>"user2", "password" => $spass, "email"=> "test@user2.com");
 
-  r\db("traintracker")->table('user')->insert($user1)->run($conn)->toNative();
-  r\db("traintracker")->table('user')->insert($user2)->run($conn)->toNative();
+  $database->table('user')->insert($user1)->run($conn)->toNative();
+  $database->table('user')->insert($user2)->run($conn)->toNative();
 
   echo "Created user => username: testuser, password: password\n";
   echo "Created user => username: testuser2, password: password\n";
@@ -71,47 +73,47 @@ function doUsers($conn){
 
 function doModules($conn){
   try{
-    r\db("traintracker")->tableDrop("module")->run($conn);
+    $database->tableDrop("module")->run($conn);
     echo "Dropped table module\n";
   }catch(Exception $e){}
   try{
-    r\db("traintracker")->tableDrop("moduleQuiz")->run($conn);
+    $database->tableDrop("moduleQuiz")->run($conn);
     echo "Dropped table moduleQuiz\n";
   }catch(Exception $e){}
   try{
-    r\db("traintracker")->tableDrop("moduleQuestion")->run($conn);
+    $database->tableDrop("moduleQuestion")->run($conn);
     echo "Dropped table moduleQuestion\n";
   }catch(Exception $e){}
   try{
-    r\db("traintracker")->tableDrop("moduleQuestionAnswer")->run($conn);
+    $database->tableDrop("moduleQuestionAnswer")->run($conn);
     echo "Dropped table moduleQuestionAnswer\n";
   }catch(Exception $e){}
   try{
-    r\db("traintracker")->tableDrop("moduleUser")->run($conn);
+    $database->tableDrop("moduleUser")->run($conn);
     echo "Dropped table moduleUser\n";
   }catch(Exception $e){}
 
-  r\db("traintracker")->tableCreate("module")->run($conn);
+  $database->tableCreate("module")->run($conn);
   echo "Created table module\n";
-  r\db("traintracker")->tableCreate("moduleQuestion")->run($conn);
+  $database->tableCreate("moduleQuestion")->run($conn);
   echo "Created table moduleQuestion\n";
-  r\db("traintracker")->tableCreate("moduleQuestionAnswer")->run($conn);
+  $database->tableCreate("moduleQuestionAnswer")->run($conn);
   echo "Created table moduleQuestionAnswer\n";
-  r\db("traintracker")->tableCreate("moduleUser")->run($conn);
+  $database->tableCreate("moduleUser")->run($conn);
   echo "Created table moduleUser\n";
 
   $module1 = array('name' => "Test Module 1", "description"=>"This is a short description of a module.", "text"=>"This is longer description<br>with html in it.", "video"=>"cat.mov");
-  $reply = r\db("traintracker")->table('module')->insert($module1)->run($conn)->toNative();
+  $reply = $database->table('module')->insert($module1)->run($conn)->toNative();
   $id = $reply['generated_keys'][0];
   $modq1 = array('moduleID'=>$id, 'text'=>'Is The Cat Cute?');
-  $reply = r\db("traintracker")->table('moduleQuestion')->insert($modq1)->run($conn)->toNative();
+  $reply = $database->table('moduleQuestion')->insert($modq1)->run($conn)->toNative();
   $qid = $reply['generated_keys'][0];
   $modq1a1 = array('moduleQuestionID'=>$qid, 'text'=>'Yes it is', 'correct'=>1);
-  r\db("traintracker")->table('moduleQuestionAnswer')->insert($modq1a1)->run($conn)->toNative();
+  $database->table('moduleQuestionAnswer')->insert($modq1a1)->run($conn)->toNative();
   $modq1a2 = array('moduleQuestionID'=>$qid, 'text'=>'No it is not');
-  r\db("traintracker")->table('moduleQuestionAnswer')->insert($modq1a2)->run($conn)->toNative();
+  $database->table('moduleQuestionAnswer')->insert($modq1a2)->run($conn)->toNative();
   $modq1a3 = array('moduleQuestionID'=>$qid, 'text'=>'Cats are never cute on internet videos');
-  r\db("traintracker")->table('moduleQuestionAnswer')->insert($modq1a3)->run($conn)->toNative();
+  $database->table('moduleQuestionAnswer')->insert($modq1a3)->run($conn)->toNative();
 
   echo "Seeded module\n";
 }
