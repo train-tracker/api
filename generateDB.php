@@ -25,7 +25,7 @@ switch($argv[1]){
 
     r\db("traintracker")->tableCreate("user")->run($conn);
 
-    $spass = password_hash('1234', PASSWORD_BCRYPT);
+    $spass = sha1('1234');
 
     $user1 = array('uname' => "testuser", "password" => $spass, "email"=> "test@user.com");
     $user2 = array('uname' => "testuser2", "password" => $spass, "email"=> "test@user2.com");
