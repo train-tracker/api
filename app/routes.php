@@ -20,7 +20,8 @@ App::post('/login', function() use($app) {
     ));
   } else {
     App::render(403,array(
-      'msg' => 'Not Logged In'
+      'msg' => 'Not Logged In',
+      'data' => $_SERVER
     ));
   }
 });
@@ -38,6 +39,7 @@ App::get('/session', 'authenticate', function() use ($app) {
   $app->render(200,array(
     'msg' => 'Authenticated',
     'data' => $userInfo,
+    'data2' => $_SERVER,
     'error' => false
   ));
 });
@@ -70,7 +72,8 @@ App::options('/(:name+)', function($name) use ($app) {
   $response->header('Access-Control-Allow-Methods', 'POST, GET, OPTIONS, PUT, DELETE, PATCH');
 
   $app->render(200,array(
-    'msg' => "Options return"
+    'msg' => "Options return",
+    'data' => $_SERVER
   ));
 
 });
@@ -125,7 +128,7 @@ App::get('/modules/:moduleID/questions', 'authenticate', function($moduleID) use
 
 App::post('/modules/:moduleID/questions', 'authenticate', function($moduleID) use ($app) {
   $vars = json_decode($app->request->getBody());
-  $filter = array('moduleID' => $moduleID);
+  $vars->$moduleID = $moduleID;
   $result = DB::table('moduleQuestion')->insert($vars)->run()->toNative();
   $vars->id = $result['generated_keys'][0];
   $app->render(200,array(
