@@ -1,5 +1,29 @@
 <?php
 
+App::post('/session', function() use($app) {
+  $vars = json_decode($app->request->getBody());
+
+  $filter = ['email'=>$vars->email, 'password'=>sha1($vars->password)];
+  $reply = DB::table('user')->filter($filter)->run()->toNative();
+
+  if (!empty($reply)){
+    $_SESSION['id'] = $reply[0]['id'];
+    $_SESSION['first_name'] = $reply[0]['first_name'];
+    $_SESSION['last_name'] = $reply[0]['last_name'];
+    $_SESSION['username'] = $reply[0]['username'];
+    $_SESSION['email'] = $reply[0]['email'];
+    if (isset($reply[0]['isAdmin'])) $_SESSION['isAdmin'] = $reply[0]['isAdmin'];
+
+    App::render(200,array(
+      'msg' => 'Logged In'
+    ));
+  } else {
+    App::render(403,array(
+      'msg' => 'Not Logged In'
+    ));
+  }
+});
+
 App::post('/login', function() use($app) {
   $vars = json_decode($app->request->getBody());
 
@@ -118,7 +142,8 @@ App::delete('/modules/:moduleID', 'authenticate', function($moduleID) use ($app)
   ));
 });
 
-App::get('/modules/:moduleID/questions', 'authenticate', function() use ($app) {
+App::get('/modules/:moduleID/questions', 'authenticate', function($moduleID) use ($app) {
+  $filter = array('moduleID' => $moduleID);
   $reply = DB::table('module')->run()->toNative();
   $app->render(200,array(
     'msg' => "All Modules",
@@ -127,9 +152,10 @@ App::get('/modules/:moduleID/questions', 'authenticate', function() use ($app) {
 
 });
 
-App::post('/modules/:moduleID/questions', 'authenticate', function() use ($app) {
+App::post('/modules/:moduleID/questions', 'authenticate', function($moduleID) use ($app) {
   $vars = json_decode($app->request->getBody());
-  $added = DB::table('module')->insert($vars)->run()->toNative();
+  $vars->moduleID = $moduleID;
+  $added = DB::table('moduleQuestion')->insert($vars)->run()->toNative();
   $vars->id = $added['generated_keys'][0];
   $app->render(200,array(
     'msg' => "Module Added",
@@ -137,20 +163,20 @@ App::post('/modules/:moduleID/questions', 'authenticate', function() use ($app) 
   ));
 });
 
-App::put('/modules', 'authenticate', function() use ($app) {
+App::put('/modules/:moduleID/questions/:questionID', 'authenticate', function($moduleID, $questionID) use ($app) {
   $vars = json_decode($app->request->getBody());
-  $filter = array('id' => $vars->id);
-  $result = DB::table('module')->filter($filter)->update($vars)->run()->toNative();
+  $filter = array('id' => $questionID);
+  $result = DB::table('moduleQuestion')->filter($filter)->update($vars)->run()->toNative();
   $app->render(200,array(
     'msg' => "Module Added",
     'data' => $vars
   ));
 });
 
-App::delete('/modules', 'authenticate', function() use ($app) {
+App::delete('/modules/:moduleID/questions/:questionID', 'authenticate', function($moduleID, $questionID) use ($app) {
   $vars = json_decode($app->request->getBody());
   $filter = array('id' => $vars->id);
-  $result = DB::table('module')->filter($filter)->delete()->run()->toNative();
+  $result = DB::table('moduleQuestion')->filter($filter)->delete()->run()->toNative();
   $app->render(200,array(
     'msg' => "Module Deleted",
     'data' => $result

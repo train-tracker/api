@@ -12,6 +12,9 @@
   $app->view(new \JsonApiView());
   $app->add(new \JsonApiMiddleware());
 
+
+  $app->add(new \Slim\Middleware\SessionCookie(array()));
+
   function authenticate(\Slim\Route $route) {
     $app = \Slim\Slim::getInstance();
     if (empty($_SESSION)) {
@@ -21,6 +24,8 @@
     }
     return true;
   }
+
+
 
   $app->add(new \Middleware\OptionsHeaders());
 
