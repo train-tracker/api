@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "565797a449d3b9e1b268352da7eb28e3",
+    "hash": "bd4106e78e618e516d8d039a8a0c5f30",
     "packages": [
         {
             "name": "danielmewes/php-rql",
