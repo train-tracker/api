@@ -16,8 +16,7 @@ $database = r\db($config['RETHINK_DATABASE']);
 
 if(!isset($argv[1])){
     doDB($conn, $config, $database);
-    doUsers($conn, $config, $database);
-    doModules($conn, $config, $database);
+    doAll($conn, $config, $database);
     die();
 }
 
@@ -27,16 +26,9 @@ switch($argv[1]){
     echo "Help may go here someday when we have time :)\n";
   case ('db'):
     doDB($conn, $config, $database);
-  case ('users'):
-    doUsers($conn, $config, $database);
-    break;
-  case ('modules'):
-    doModules($conn, $config, $database);
-    break;
   case ('all'):
     doDB($conn, $config, $database);
-    doUsers($conn, $config, $database);
-    doModules($conn, $config, $database);
+    doAll($conn, $config, $database);
     break;
 
 }
@@ -48,7 +40,7 @@ function doDB($conn, $config, $database){
   }catch(Exception $e){}
 }
 
-function doUsers($conn, $config, $database){
+function doAll($conn, $config, $database){
   // Create a test table
 
   try{
@@ -62,22 +54,24 @@ function doUsers($conn, $config, $database){
   $spass = sha1('1234');
 
   $user1 = array('username' => "testuser", "first_name"=>"test", "last_name"=>"user", "password" => $spass, "email"=> "test@user.com", "isAdmin" => 1);
-  $database->table('user')->insert($user1)->run($conn)->toNative();
+  $reply = $database->table('user')->insert($user1)->run($conn)->toNative();
+  $user1ID = $reply['generated_keys'][0];
 
   $user2 = array('username' => "testuser2", "first_name"=>"test", "last_name"=>"user2", "password" => $spass, "email"=> "test@user2.com");
-  $database->table('user')->insert($user2)->run($conn)->toNative();
+  $reply = $database->table('user')->insert($user2)->run($conn)->toNative();
+  $user2ID = $reply['generated_keys'][0];
 
   $user3 = array('username' => "testuser3", "first_name"=>"test", "last_name"=>"user3", "password" => $spass, "email"=> "test@user3.com");
-  $database->table('user')->insert($user3)->run($conn)->toNative();
+  $reply = $database->table('user')->insert($user3)->run($conn)->toNative();
+  $user3ID = $reply['generated_keys'][0];
 
   $user4 = array('username' => "testuser4", "first_name"=>"test", "last_name"=>"user4", "password" => $spass, "email"=> "test@user4.com");
-  $database->table('user')->insert($user4)->run($conn)->toNative();
+  $reply = $database->table('user')->insert($user4)->run($conn)->toNative();
+  $user4ID = $reply['generated_keys'][0];
 
   echo "Created user => username: testuser, password: password\n";
   echo "Created user => username: testuser2, password: password\n";
-}
 
-function doModules($conn, $config, $database){
   try{
     $database->tableDrop("module")->run($conn);
     echo "Dropped table module\n";
@@ -94,6 +88,18 @@ function doModules($conn, $config, $database){
     $database->tableDrop("moduleUser")->run($conn);
     echo "Dropped table moduleUser\n";
   }catch(Exception $e){}
+  try{
+    $database->tableDrop("class")->run($conn);
+    echo "Dropped table class\n";
+  }catch(Exception $e){}
+  try{
+    $database->tableDrop("classUser")->run($conn);
+    echo "Dropped table classUser\n";
+  }catch(Exception $e){}
+  try{
+    $database->tableDrop("classModule")->run($conn);
+    echo "Dropped table classModule\n";
+  }catch(Exception $e){}
 
   $database->tableCreate("module")->run($conn);
   echo "Created table module\n";
@@ -101,14 +107,41 @@ function doModules($conn, $config, $database){
   echo "Created table moduleQuestion\n";
   $database->tableCreate("moduleUser")->run($conn);
   echo "Created table moduleUser\n";
+  $database->tableCreate("class")->run($conn);
+  echo "Created table class\n";
+  $database->tableCreate("classUser")->run($conn);
+  echo "Created table classUser\n";
+  $database->tableCreate("classModule")->run($conn);
+  echo "Created table classModule\n";
 
   $module1 = array('name' => "Test Module 1", "description"=>"This is a short description of a module.", "text"=>"This is longer description<br>with html in it.", "video"=>"cat.mov");
   $reply = $database->table('module')->insert($module1)->run($conn)->toNative();
-  $id = $reply['generated_keys'][0];
-  $modq1 = array('moduleID'=>$id, 'text'=>'Is The Cat Cute?', 'from'=>'0:05', 'to'=>'00:09', 'correct'=>1, 'choices' => array(array('text'=>'Yes it is'), array('text'=>'No it is not'), array('text'=>'Cats are never cute on internet videos')));
+  $moduleID = $reply['generated_keys'][0];
+  $modq1 = array('moduleID'=>$moduleID, 'text'=>'Is The Cat Cute?', 'from'=>'0:05', 'to'=>'00:09', 'correct'=>1, 'choices' => array(array('text'=>'Yes it is'), array('text'=>'No it is not'), array('text'=>'Cats are never cute on internet videos')));
   $reply = $database->table('moduleQuestion')->insert($modq1)->run($conn)->toNative();
-  $modq1 = array('moduleID'=>$id, 'text'=>'Did the cat kill the critter?', 'from'=>'0:14', 'to'=>'00:18', 'correct'=>2, 'choices' => array(array('text'=>'Yes'), array('text'=>'No')));
+  $modq1 = array('moduleID'=>$moduleID, 'text'=>'Did the cat kill the critter?', 'from'=>'0:14', 'to'=>'00:18', 'correct'=>2, 'choices' => array(array('text'=>'Yes'), array('text'=>'No')));
   $reply = $database->table('moduleQuestion')->insert($modq1)->run($conn)->toNative();
+
+  $class = array('name'=>'Sample Class About a Cute Cat', 'date'=>'2015-01-24 18:50:00PM', 'status'=>1);
+  $reply = $database->table('class')->insert($class)->run($conn)->toNative();
+  $classID = $reply['generated_keys'][0];
+
+  $userClass = array('userID'=>$user1ID, 'classID'=>$classID);
+  $reply = $database->table('classUser')->insert($userClass)->run($conn)->toNative();
+
+  $userClass = array('userID'=>$user2ID, 'classID'=>$classID, 'proctor'=>true);
+  $reply = $database->table('classUser')->insert($userClass)->run($conn)->toNative();
+
+  $userClass = array('userID'=>$user3ID, 'classID'=>$classID);
+  $reply = $database->table('classUser')->insert($userClass)->run($conn)->toNative();
+
+  $userClass = array('userID'=>$user4ID, 'classID'=>$classID);
+  $reply = $database->table('classUser')->insert($userClass)->run($conn)->toNative();
+
+  $moduleClass = array('moduleID'=>$moduleID, 'classID'=>$classID);
+  $reply = $database->table('classModule')->insert($moduleClass)->run($conn)->toNative();
+
+
 
   echo "Seeded module\n";
 }

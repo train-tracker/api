@@ -63,8 +63,6 @@ App::get('/data', function() use ($app) {
 });
 
 App::options('/(:name+)', function($name) use ($app) {
-
-
   $response = $app->response();
   $response->header('Access-Control-Allow-Origin', $_SERVER['HTTP_ORIGIN']);
   $response->header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
@@ -159,6 +157,7 @@ App::put('/modules/:moduleID/questions/:questionID', 'authenticate', function($m
     'data' => $result
   ));
 });
+
 
 App::delete('/modules/:moduleID/questions/:questionID', 'authenticate', function($moduleID, $questionID) use ($app) {
   $filter = array('id' => $questionID);
