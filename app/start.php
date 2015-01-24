@@ -13,7 +13,7 @@
   $app->add(new \JsonApiMiddleware());
 
 
-  //$app->add(new \Slim\Middleware\SessionCookie(array('domain' => 'dockerhost')));
+  $app->add(new \Slim\Middleware\SessionCookie(array('domain' => 'dockerhost')));
 
   function authenticate(\Slim\Route $route) {
     $app = \Slim\Slim::getInstance();
