@@ -87,13 +87,26 @@ App::get('/modules', 'authenticate', function() use ($app) {
 
 });
 
+App::get('/modules/:moduleID', 'authenticate', function($moduleID) use ($app) {
+  $filter = array('id' => $moduleID);
+  $reply = DB::table('module')->filter($filter)->run()->toNative();
+  $filter = array('moduleID' => $moduleID);
+  $reply['questions'] = DB::table('moduleQuestion')->filter($filter)->run()->toNative();
+
+  $app->render(200,array(
+    'msg' => "All Modules",
+    'data' => $reply
+  ));
+
+});
+
 App::post('/modules', 'authenticate', function() use ($app) {
   $vars = json_decode($app->request->getBody());
   $result = DB::table('module')->insert($vars)->run()->toNative();
   $vars->id = $result['generated_keys'][0];
   $app->render(200,array(
     'msg' => "Module Added",
-    'data' => $result
+    'data' => $vars
   ));
 });
 
@@ -133,7 +146,7 @@ App::post('/modules/:moduleID/questions', 'authenticate', function($moduleID) us
   $vars->id = $result['generated_keys'][0];
   $app->render(200,array(
     'msg' => "Module Added",
-    'data' => $result
+    'data' => $vars
   ));
 });
 
@@ -157,6 +170,7 @@ App::delete('/modules/:moduleID/questions/:questionID', 'authenticate', function
 });
 
 
+/*
 App::get('/modules/:moduleID/questions/:questionsID/answers', 'authenticate', function($moduleID, $questionID) use ($app) {
   $filter = array('moduleID' => $moduleID);
   $reply = DB::table('moduleQuestionAnswer')->run()->toNative();
@@ -197,4 +211,5 @@ App::delete('/modules/:moduleID/questions/:questionID/answers/:answerID', 'authe
     'data' => $result
   ));
 });
+*/
 

@@ -85,10 +85,6 @@ function doModules($conn, $config, $database){
     echo "Dropped table moduleQuestion\n";
   }catch(Exception $e){}
   try{
-    $database->tableDrop("moduleQuestionAnswer")->run($conn);
-    echo "Dropped table moduleQuestionAnswer\n";
-  }catch(Exception $e){}
-  try{
     $database->tableDrop("moduleUser")->run($conn);
     echo "Dropped table moduleUser\n";
   }catch(Exception $e){}
@@ -97,23 +93,14 @@ function doModules($conn, $config, $database){
   echo "Created table module\n";
   $database->tableCreate("moduleQuestion")->run($conn);
   echo "Created table moduleQuestion\n";
-  $database->tableCreate("moduleQuestionAnswer")->run($conn);
-  echo "Created table moduleQuestionAnswer\n";
   $database->tableCreate("moduleUser")->run($conn);
   echo "Created table moduleUser\n";
 
   $module1 = array('name' => "Test Module 1", "description"=>"This is a short description of a module.", "text"=>"This is longer description<br>with html in it.", "video"=>"cat.mov");
   $reply = $database->table('module')->insert($module1)->run($conn)->toNative();
   $id = $reply['generated_keys'][0];
-  $modq1 = array('moduleID'=>$id, 'text'=>'Is The Cat Cute?');
+  $modq1 = array('moduleID'=>$id, 'text'=>'Is The Cat Cute?', 'answers' => array(array('text'=>'Yes it is', 'correct'=>1), array('text'=>'No it is not'), array('text'=>'Cats are never cute on internet videos')));
   $reply = $database->table('moduleQuestion')->insert($modq1)->run($conn)->toNative();
-  $qid = $reply['generated_keys'][0];
-  $modq1a1 = array('moduleQuestionID'=>$qid, 'text'=>'Yes it is', 'correct'=>1);
-  $database->table('moduleQuestionAnswer')->insert($modq1a1)->run($conn)->toNative();
-  $modq1a2 = array('moduleQuestionID'=>$qid, 'text'=>'No it is not');
-  $database->table('moduleQuestionAnswer')->insert($modq1a2)->run($conn)->toNative();
-  $modq1a3 = array('moduleQuestionID'=>$qid, 'text'=>'Cats are never cute on internet videos');
-  $database->table('moduleQuestionAnswer')->insert($modq1a3)->run($conn)->toNative();
 
   echo "Seeded module\n";
 }
