@@ -19,7 +19,7 @@ App::post('/register', function() {
   $user = json_decode(Request::getBody(), true);
 
   // Hash the password
-  $password = password_hash($user['password'], PASSWORD_BCRYPT);
+  $password = sha1($user['password']);
 
   // Make sure the passwords match
   if($user['password'] != $user['passwordConfirm']) {
