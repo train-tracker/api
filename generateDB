@@ -117,9 +117,9 @@ function doAll($conn, $config, $database){
   $module1 = array('name' => "Test Module 1", "description"=>"This is a short description of a module.", "text"=>"This is longer description<br>with html in it.", "video"=>"cat.mov");
   $reply = $database->table('module')->insert($module1)->run($conn)->toNative();
   $moduleID = $reply['generated_keys'][0];
-  $modq1 = array('moduleID'=>$moduleID, 'text'=>'Is The Cat Cute?', 'from'=>'0:05', 'to'=>'00:09', 'correct'=>1, 'choices' => array(array('text'=>'Yes it is'), array('text'=>'No it is not'), array('text'=>'Cats are never cute on internet videos')));
+  $modq1 = array('moduleID'=>$moduleID, 'text'=>'Is The Cat Cute?', 'from'=>'5', 'to'=>'9', 'correct'=>1, 'choices' => array(array('text'=>'Yes it is'), array('text'=>'No it is not'), array('text'=>'Cats are never cute on internet videos')));
   $reply = $database->table('moduleQuestion')->insert($modq1)->run($conn)->toNative();
-  $modq1 = array('moduleID'=>$moduleID, 'text'=>'Did the cat kill the critter?', 'from'=>'0:14', 'to'=>'00:18', 'correct'=>2, 'choices' => array(array('text'=>'Yes'), array('text'=>'No')));
+  $modq1 = array('moduleID'=>$moduleID, 'text'=>'Did the cat kill the critter?', 'from'=>'14', 'to'=>'18', 'correct'=>2, 'choices' => array(array('text'=>'Yes'), array('text'=>'No')));
   $reply = $database->table('moduleQuestion')->insert($modq1)->run($conn)->toNative();
 
   $class = array('name'=>'Sample Class About a Cute Cat', 'date'=>'2015-01-24 18:50:00PM', 'status'=>1);

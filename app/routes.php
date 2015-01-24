@@ -119,13 +119,19 @@ App::put('/modules/:moduleID', 'authenticate', function($moduleID) use ($app) {
 });
 
 App::delete('/modules/:moduleID', 'authenticate', function($moduleID) use ($app) {
-  $filter = array('id' => $moduleID);
-  $result = DB::table('module')->filter($filter)->delete()->run()->toNative();
+  $result = getModule($app, $moduleID);
   $app->render(200,array(
     'msg' => "Module Deleted",
     'data' => $result
   ));
 });
+
+function getModule($app, $moduleID){
+  $filter = array('id' => $moduleID);
+  return DB::table('module')->filter($filter)->run()->toNative();
+
+}
+
 
 App::get('/modules/:moduleID/questions', 'authenticate', function($moduleID) use ($app) {
   $filter = array('moduleID' => $moduleID);
@@ -169,10 +175,22 @@ App::delete('/modules/:moduleID/questions/:questionID', 'authenticate', function
 });
 
 
-/*
-App::get('/modules/:moduleID/questions/:questionsID/answers', 'authenticate', function($moduleID, $questionID) use ($app) {
-  $filter = array('moduleID' => $moduleID);
-  $reply = DB::table('moduleQuestionAnswer')->run()->toNative();
+App::get('/user/:userID', 'authenticate', function($userID) use ($app) {
+  $user = getUser($app, $userID);
+  $app->render(200,array(
+    'msg' => "One User",
+    'data' => $user
+  ));
+});
+
+function getUser($app, $userID){
+  $filter = array('id' => $userID);
+  $user = DB::table('user')->filter($filter)->run()->toNative();
+  return $user;
+}
+
+App::get('/class', 'authenticate', function() use ($app) {
+  $reply = DB::table('class')->run()->toNative();
   $app->render(200,array(
     'msg' => "All Modules",
     'data' => $reply
@@ -180,35 +198,94 @@ App::get('/modules/:moduleID/questions/:questionsID/answers', 'authenticate', fu
 
 });
 
-App::post('/modules/:moduleID/questions/:questionsID/answers', 'authenticate', function($moduleID, $questionID) use ($app) {
+App::get('/class/:classID', 'authenticate', function($classID) use ($app) {
+  $filter = array('id' => $classID);
+  $reply = DB::table('class')->filter($filter)->run()->toNative();
+  $filter = array('classID' => $classID);
+
+  $users = DB::table('classUser')->filter($filter)->run()->toNative();
+  foreach($users as $user){
+    $userID = $user['userID'];
+    $reply['users'][] = getUser($app, $userID);
+  }
+
+  $modules = DB::table('classModule')->filter($filter)->run()->toNative();
+  foreach($modules as $module){
+    $moduleID = $module['moduleID'];
+    $reply['modules'][] = getModule($app, $moduleID);
+  }
+
+  $app->render(200,array(
+    'msg' => "One Class",
+    'data' => $reply
+  ));
+
+});
+
+App::post('/classes', 'authenticate', function() use ($app) {
   $vars = json_decode($app->request->getBody());
-  $vars->moduleID = $moduleID;
-  $result = DB::table('moduleQuestionAnswer')->insert($vars)->run()->toNative();
+  $result = DB::table('class')->insert($vars)->run()->toNative();
   $vars->id = $result['generated_keys'][0];
   $app->render(200,array(
-    'msg' => "Module Added",
+    'msg' => "Class Added",
+    'data' => $vars
+  ));
+});
+
+App::put('/classes/:classID', 'authenticate', function($classID) use ($app) {
+  $vars = json_decode($app->request->getBody());
+  $filter = array('id' => $classID);
+  $result = DB::table('class')->filter($filter)->update($vars)->run()->toNative();
+  $app->render(200,array(
+    'msg' => "Class Updated",
     'data' => $result
   ));
 });
 
-App::put('/modules/:moduleID/questions/:questionID/answers/:answerID', 'authenticate', function($moduleID, $questionID, $answerID) use ($app) {
-  $vars = json_decode($app->request->getBody());
-  $filter = array('id' => $answerID);
-  $result = DB::table('moduleQuestionAnswer')->filter($filter)->update($vars)->run()->toNative();
+App::delete('/classes/:classID', 'authenticate', function($classID) use ($app) {
+  $filter = array('id' => $classID);
+  $result = DB::table('class')->filter($filter)->delete()->run()->toNative();
   $app->render(200,array(
-    'msg' => "Module Added",
+    'msg' => "Class Deleted",
     'data' => $result
   ));
 });
 
-App::delete('/modules/:moduleID/questions/:questionID/answers/:answerID', 'authenticate', function($moduleID, $questionID, $answerID) use ($app) {
-  $vars = json_decode($app->request->getBody());
-  $filter = array('id' => $answerID);
-  $result = DB::table('moduleQuestionAnswer')->filter($filter)->delete()->run()->toNative();
+App::get('/class/:classID/user/:userID', 'authenticate', function($classID, $userID) use ($app) {
+  $userClass = array('classID'=>$classID, 'userID'=>$userID);
+  $result = DB::table('classUser')->insert($userClass)->run()->toNative();
   $app->render(200,array(
-    'msg' => "Module Deleted",
+    'msg' => "User Added to Class",
     'data' => $result
   ));
 });
-*/
+
+App::delete('/class/:classID/user/:userID', 'authenticate', function($classID, $userID) use ($app) {
+  $filter = array('classID'=>$classID, 'userID'=>$userID);
+  $result = DB::table('classUser')->filter($filter)->delete()->run()->toNative();
+  $app->render(200,array(
+    'msg' => "User Removed from Class",
+    'data' => $result
+  ));
+});
+
+App::get('/class/:classID/module/:moduleID', 'authenticate', function($classID, $moduleID) use ($app) {
+  $moduleClass = array('classID'=>$classID, 'moduleID'=>$moduleID);
+  $result = DB::table('classModule')->insert($moduleClass)->run()->toNative();
+  $app->render(200,array(
+    'msg' => "Module Added to Class",
+    'data' => $result
+  ));
+});
+
+App::delete('/class/:classID/module/:moduleID', 'authenticate', function($classID, $moduleID) use ($app) {
+  $filter = array('classID'=>$classID, 'moduleID'=>$moduleID);
+  $result = DB::table('classModule')->filter($filter)->delete()->run()->toNative();
+  $app->render(200,array(
+    'msg' => "Module Removed from Class",
+    'data' => $result
+  ));
+});
+
+
 
