@@ -11,12 +11,15 @@ class AuthController extends BaseController {
     // Hash the password
     $password = sha1($user['password']);
 
-    // // Make sure the passwords match
-    if($user['password'] != $user['passwordConfirm']) {
+    if(!filter_var($user['email'], FILTER_VALIDATE_EMAIL)) {
+      $code = 422;
+      $response = ['msg' => 'Email must be a valid email address'];
+    // Make sure the passwords match
+    } else if($user['password'] != $user['passwordConfirm']) {
 
       // If not, return a validation error
       $code = 422;
-      $response = ['msg' => 'Passwords must match', 'error' => true];
+      $response = ['msg' => 'Passwords must match'];
     } else {
 
       // Set the password to the hash
