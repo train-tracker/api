@@ -11,6 +11,11 @@ $conn = r\connect($config['RETHINK_HOST']);
 $conn->useDb($config['RETHINK_DATABASE']);
 
 switch($argv[1]){
+  case ('db'):
+    try{
+      r\dbCreate("traintracker")->run($conn);
+    }catch(Exception $e){}
+    break;
   case ('users'):
     // Create a test table
 
