@@ -2,7 +2,6 @@
 
 use App, Request, DB, Exception;
 
-
 class AuthController extends BaseController {
 
   public function register() {
