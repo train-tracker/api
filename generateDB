@@ -99,7 +99,7 @@ function doModules($conn, $config, $database){
   $module1 = array('name' => "Test Module 1", "description"=>"This is a short description of a module.", "text"=>"This is longer description<br>with html in it.", "video"=>"cat.mov");
   $reply = $database->table('module')->insert($module1)->run($conn)->toNative();
   $id = $reply['generated_keys'][0];
-  $modq1 = array('moduleID'=>$id, 'text'=>'Is The Cat Cute?', 'answers' => array(array('text'=>'Yes it is', 'correct'=>1), array('text'=>'No it is not'), array('text'=>'Cats are never cute on internet videos')));
+  $modq1 = array('moduleID'=>$id, 'text'=>'Is The Cat Cute?', 'correct'=>0, 'choices' => array(array('text'=>'Yes it is'), array('text'=>'No it is not'), array('text'=>'Cats are never cute on internet videos')));
   $reply = $database->table('moduleQuestion')->insert($modq1)->run($conn)->toNative();
 
   echo "Seeded module\n";
