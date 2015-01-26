@@ -119,7 +119,7 @@ App::put('/modules/:moduleID', 'authenticate', function($moduleID) use ($app) {
 });
 
 App::delete('/modules/:moduleID', 'authenticate', function($moduleID) use ($app) {
-  $result = getModule($app, $moduleID);
+  $result = DB::table('module')->filter(["id" => $moduleID])->delete()->run();
   $app->render(200,array(
     'msg' => "Module Deleted",
     'data' => $result
